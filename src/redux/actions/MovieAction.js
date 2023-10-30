@@ -1,20 +1,37 @@
 import api from "../api";
 
+const API_KEY = process.env.REACT_APP_API_KEY;
 function getMovies() {
   return async (dispatch) => {
-    const popularMovieApi = await api.get(
-      `/movie/popular?<<dd50902a24371d16a1e51327d2e461a9>>&language=en-US&page=1`
+    const popularMovieApi = api.get(
+      `/movie/popular?api_key=${API_KEY}&language=en-US&page=1`
     );
 
-    // let url = `/movie/popular?<<dd50902a24371d16a1e51327d2e461a9>>&language=en-US&page=1`;
-    // let response = await fetch(url);
-    // let data = await response.json();
+    const topRateApi = api.get(
+      `/movie/top_rated?api_key=${API_KEY}&language=en-US&page=1`
+    );
 
-    // let url2 = `/movie/top_rated?<dd50902a24371d16a1e51327d2e461a9>>&language=en-US&page=1`;
-    // let response2 = await fetch(url);
+    const upComingApi = api.get(
+      `/movie/upcoming?api_key=${API_KEY}&language=en-US&page=1`
+    );
 
-    // let url3 = `/movie/upcoming?<<dd50902a24371d16a1e51327d2e461a9>>&language=en-US&page=1`;
-    // let res = await fetch(url3);
+    let [popularMovies, topRateMovies, upcomingMovies] = await Promise.all([
+      popularMovieApi,
+      topRateApi,
+      upComingApi,
+    ]);
+    dispatch({
+      type: "GET_MOVIES_SUCESS",
+      payload: {
+        popularMovies: popularMovies.data,
+        topRateMovies: topRateMovies.data,
+        upcomingMovies: upcomingMovies,
+      },
+    });
+    // console.log(popularMovies);
+    // console.log(topRateMovies);
+    // console.log(upcomingMovies);
+    // await을 한번만 사용할 수 있도록 해주는 Promise.all함수
   };
 }
 
